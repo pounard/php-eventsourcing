@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/5.0/phpunit.xsd"
+    backupGlobals="false"
+    colors="true"
+    bootstrap="vendor/autoload.php"
+    convertErrorsToExceptions="false"
+    convertNoticesToExceptions="true"
+    convertWarningsToExceptions="true"
+>
+    <php>
+        <ini name="error_reporting" value="-1" />
+    </php>
+
+    <testsuites>
+        <testsuite name="EventSourcing store">
+            <directory>./store/tests/</directory>
+        </testsuite>
+        <testsuite name="EventSourcing Goat integration">
+            <directory>./goat/tests/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory>./goat/src</directory>
+            <directory>./store/src</directory>
+            <exclude>
+                <directory>./goat/tests</directory>
+                <directory>./store/tests</directory>
+                <directory>./vendor</directory>
+            </exclude>
+        </whitelist>
+    </filter>
+
+    <php>
+        <!-- Goat configuration - Those variables come from the original Goat unit test suite -->
+        <env name="EXT_PGSQL_DSN" value="ext_pgsql://192.168.57.102/gtd" />
+        <env name="EXT_PGSQL_PASSWORD" value="gtd" />
+        <env name="EXT_PGSQL_USERNAME" value="gtd" />
+        <env name="PDO_MYSQL_DSN" value="pdo_mysql://localhost/momm" />
+        <env name="PDO_MYSQL_PASSWORD" value="momm" />
+        <env name="PDO_MYSQL_USERNAME" value="momm" />
+        <env name="PDO_PGSQL_DSN" value="pdo_pgsql://192.168.57.102/gtd" />
+        <env name="PDO_PGSQL_PASSWORD" value="gtd" />
+        <env name="PDO_PGSQL_USERNAME" value="gtd" />
+    </php>
+</phpunit>

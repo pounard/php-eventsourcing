@@ -1,0 +1,44 @@
+{
+    "name": "makinacorpus/eventsourcing",
+    "description": "Event sourcing educational project",
+    "type": "library",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Pierre Rineau",
+            "email": "pierre.rineau@makina-corpus.com"
+        },
+        {
+            "name": "Makina Corpus",
+            "homepage": "http://makina-corpus.com"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:pounard/goat.git"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=7.1",
+        "ramsey/uuid": "^4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7",
+        "makinacorpus/goat": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "MakinaCorpus\\EventSourcing\\Goat\\": "goat/src/",
+            "MakinaCorpus\\EventSourcing\\": "store/src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MakinaCorpus\\EventSourcing\\Tests\\Goat\\": "goat/src/",
+            "MakinaCorpus\\EventSourcing\\Tests\\": "store/tests/"
+        }
+    }
+}
