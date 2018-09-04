@@ -36,25 +36,28 @@ and well tested enough, it might be one day a full-fledged production-ready proj
 Wish-list, in order of preference and needs:
 
  * [x] add a 'type' column for aggregate identity, with no constraint at the store level,
- * [_] test it even more,
- * [_] implement a basic event emitter and event listener API,
- * [_] implement a basic aggregate-based event-driven domain oriented API layer implemented
+ * [ ] test it even more,
+ * [ ] implement a basic event emitter and event listener API,
+ * [ ] implement a basic aggregate-based event-driven domain oriented API layer implemented
    using generic store factory decorators,
- * [_] very large volume benchmarking,
- * [_] configuration-based event namespace storage partionning API implemented using generic
+ * [ ] very large volume benchmarking,
+ * [ ] configuration-based event namespace storage partionning API implemented using generic
    store factory decorators,
- * [_] transaction support if the other databases are using the same driver as the event store,
- * [_] published/failed status in event table,
- * [_] Symfony light bundle with a few dependency injection passes (also would be working for
+ * [ ] transaction support if the other databases are using the same driver as the event store,
+ * [ ] published/failed status in event table,
+ * [ ] Symfony light bundle with a few dependency injection passes (also would be working for
    Drupal 8) in order to register events and aggregates,
- * [_] better configuration abilities for goat factory,
- * [_] snapshort storage and API,
- * [_] helpers to use it along Symfony's Messenger component,
- * [_] Drupal 7 driver for event store,
- * [_] Drupal 8 driver for event store.
+ * [ ] better configuration abilities for goat factory,
+ * [ ] snapshort storage and API,
+ * [ ] helpers to use it along Symfony's Messenger component,
+ * [ ] Drupal 7 driver for event store,
+ * [ ] Drupal 8 driver for event store,
+ * [ ] Should primary key be (id, type, revision) instead of (id, revision) or should it be
+   left to the API  user to choose whatever to do with type?
 
-# Pouet
+# Additional arbitrary notes from concrete code
 
+<pre>
  *   - store in-memory event using a decorator over the event store/event store factory
  *     - if so, wrap with a transaction
  *     - write everything when it goes OK
@@ -72,3 +75,4 @@ Wish-list, in order of preference and needs:
  *       - define a generic command implementation for updates that check for
  *         allowed values
  *       - define a generic handler implementation that validates the allowed values
+</pre>
