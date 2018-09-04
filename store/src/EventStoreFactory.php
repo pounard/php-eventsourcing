@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\EventSourcing;
+namespace MakinaCorpus\EventSourcing\EventStore;
 
 /**
  * Creates event stores from the given namespace.

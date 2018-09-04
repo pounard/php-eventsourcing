@@ -1,9 +1,9 @@
 <?php
 
-namespace MakinaCorpus\EventSourcing\Tests;
+namespace MakinaCorpus\EventSourcing\EventStore\Tests;
 
-use MakinaCorpus\EventSourcing\Event;
-use MakinaCorpus\EventSourcing\EventStore;
+use MakinaCorpus\EventSourcing\EventStore\Event;
+use MakinaCorpus\EventSourcing\EventStore\EventStore;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -38,7 +38,7 @@ abstract class EventStoreTest extends TestCase
         $this->assertSame($store->getNamespace(), $event->getNamespace());
         $this->assertFalse($event->isPublished());
         $this->assertLessThan(new \DateTimeImmutable(), $event->createdAt());
-        $this->assertSame(Event::class, $event->getName());
+        $this->assertSame('event', $event->getName());
         $this->assertNotEmpty($uuid = $event->getAggregateId());
         $this->assertTrue($event->isStored());
         $this->assertSame((string)$uuid, (string)$event->getRootAggregateId());

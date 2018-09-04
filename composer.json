@@ -32,13 +32,13 @@
     "autoload": {
         "psr-4": {
             "MakinaCorpus\\EventSourcing\\Goat\\": "goat/src/",
-            "MakinaCorpus\\EventSourcing\\": "store/src/"
+            "MakinaCorpus\\EventSourcing\\EventStore\\": "store/src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
             "MakinaCorpus\\EventSourcing\\Tests\\Goat\\": "goat/src/",
-            "MakinaCorpus\\EventSourcing\\Tests\\": "store/tests/"
+            "MakinaCorpus\\EventSourcing\\EventStore\\Tests\\": "store/tests/"
         }
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\EventSourcing;
+namespace MakinaCorpus\EventSourcing\EventStore;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;
@@ -50,6 +50,8 @@ class Event
             $ret = new static();
         }
 
+        $ret->name = $name;
+
         return $ret;
     }
 
@@ -73,7 +75,7 @@ class Event
         $ret->createdAt = $createdAt;
         $ret->data = $data;
         $ret->isPublished = $isPublished;
-        $ret->name = \get_class($ret);
+        $ret->name = $name;
         $ret->namespace = $namespace;
         $ret->position = $position;
         $ret->revision = $revision;
@@ -90,8 +92,27 @@ class Event
         $ret = self::createInstanceFromName($name);
         $ret->aggregateId = $aggregateId;
         $ret->data = $data;
-        $ret->name = \get_class($ret);
         $ret->rootAggregateId = $rootAggregateId;
+
+        return $ret;
+    }
+
+    final protected static function createWithClassFor(UuidInterface $aggregateId, array $data = []): self
+    {
+        $ret = new static();
+        $ret->aggregateId = Uuid::uuid4();
+        $ret->data = $data;
+        $ret->name = \get_class($ret);
+
+        return $ret;
+    }
+
+    final protected static function createWithClass(array $data = []): self
+    {
+        $ret = new static();
+        $ret->aggregateId = Uuid::uuid4();
+        $ret->data = $data;
+        $ret->name = \get_class($ret);
 
         return $ret;
     }
@@ -101,7 +122,7 @@ class Event
         $ret = self::createInstanceFromName($name);
         $ret->aggregateId = Uuid::uuid4();
         $ret->data = $data;
-        $ret->name = $name ?? \get_class($ret);
+        $ret->name = $name;
 
         return $ret;
     }
@@ -184,6 +205,14 @@ class Event
     final public function isPublished(): bool
     {
         return $this->isPublished;
+    }
+
+    /**
+     * Get value from data
+     */
+    final public function get(string $name, $default = null)
+    {
+        return $this->data[$name] ?? $default;
     }
 
     /**

@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\EventSourcing\Tests;
+namespace MakinaCorpus\EventSourcing\EventStore\Tests;
 
-use MakinaCorpus\EventSourcing\ArrayEventStoreFactory;
+use MakinaCorpus\EventSourcing\EventStore\ArrayEventStoreFactory;
 
 /**
  * Tests the views

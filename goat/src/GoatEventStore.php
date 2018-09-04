@@ -5,11 +5,11 @@ namespace MakinaCorpus\EventSourcing\Goat;
 use Goat\Query\Query;
 use Goat\Runner\RunnerInterface;
 use Goat\Runner\Transaction;
-use MakinaCorpus\EventSourcing\ConcretEventQuery;
-use MakinaCorpus\EventSourcing\Event;
-use MakinaCorpus\EventSourcing\EventQuery;
-use MakinaCorpus\EventSourcing\EventStore;
-use MakinaCorpus\EventSourcing\EventStream;
+use MakinaCorpus\EventSourcing\EventStore\ConcretEventQuery;
+use MakinaCorpus\EventSourcing\EventStore\Event;
+use MakinaCorpus\EventSourcing\EventStore\EventQuery;
+use MakinaCorpus\EventSourcing\EventStore\EventStore;
+use MakinaCorpus\EventSourcing\EventStore\EventStream;
 use Ramsey\Uuid\UuidInterface;
 
 final class GoatEventStore implements EventStore

@@ -4,12 +4,12 @@ namespace MakinaCorpus\EventSourcing\Goat\Tests;
 
 use Goat\Driver\Dsn;
 use Goat\Driver\ExtPgSQL\ExtPgSQLConnection;
+use Goat\Driver\PDO\PDOMySQLConnection;
 use Goat\Driver\PDO\PDOPgSQLConnection;
 use Goat\Runner\RunnerInterface;
+use MakinaCorpus\EventSourcing\EventStore\EventStore;
+use MakinaCorpus\EventSourcing\EventStore\Tests\EventStoreTest;
 use MakinaCorpus\EventSourcing\Goat\GoatEventStoreFactory;
-use MakinaCorpus\EventSourcing\Tests\EventStoreTest;
-use MakinaCorpus\EventSourcing\EventStore;
-use Goat\Driver\PDO\PDOMySQLConnection;
 
 /**
  * Tests the views

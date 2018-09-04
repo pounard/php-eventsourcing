@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\EventSourcing\Tests;
+namespace MakinaCorpus\EventSourcing\EventStore\Tests;
 
-use MakinaCorpus\EventSourcing\Event;
+use MakinaCorpus\EventSourcing\EventStore\Event;
 
 class EventThatInherits extends Event
 {

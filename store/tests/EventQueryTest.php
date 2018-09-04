@@ -1,8 +1,8 @@
 <?php
 
-namespace MakinaCorpus\EventSourcing\Tests;
+namespace MakinaCorpus\EventSourcing\EventStore\Tests;
 
-use MakinaCorpus\EventSourcing\ConcretEventQuery;
+use MakinaCorpus\EventSourcing\EventStore\ConcretEventQuery;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 

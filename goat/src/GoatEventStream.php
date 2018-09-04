@@ -3,8 +3,8 @@
 namespace MakinaCorpus\EventSourcing\Goat;
 
 use Goat\Runner\ResultIteratorInterface;
-use MakinaCorpus\EventSourcing\Event;
-use MakinaCorpus\EventSourcing\EventStream;
+use MakinaCorpus\EventSourcing\EventStore\Event;
+use MakinaCorpus\EventSourcing\EventStore\EventStream;
 use Ramsey\Uuid\Uuid;
 
 final class GoatEventStream implements \IteratorAggregate, EventStream
@@ -35,7 +35,9 @@ final class GoatEventStream implements \IteratorAggregate, EventStream
             Uuid::fromString($row['root_aggregate_id']),
             $row['created_at'],
             $row['name'],
-            @json_decode($row['data'], true) ?? [],
+            // Depending upon the backend driver, JSON type might not be supported
+            // (for example with MySQL) case in which we need to convert it from here.
+            $row['data'] ? (\is_string($row['data']) ? \json_decode($row['data'], true) : $row['data']) : [],
             // Not all RDBMS natively support boolean
             (bool)$row['is_published']
         );

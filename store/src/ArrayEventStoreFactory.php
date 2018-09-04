@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\EventSourcing;
+namespace MakinaCorpus\EventSourcing\EventStore;
 
 /**
  * Array-based in-memory event store factory.

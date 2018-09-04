@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\EventSourcing;
+namespace MakinaCorpus\EventSourcing\EventStore;
 
 use Ramsey\Uuid\Uuid;
 use Ramsey\Uuid\UuidInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace MakinaCorpus\EventSourcing\Tests;
+namespace MakinaCorpus\EventSourcing\EventStore\Tests;
 
 class EventWithBrokenClass
 {

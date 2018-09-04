@@ -3,9 +3,9 @@
 namespace MakinaCorpus\EventSourcing\Goat;
 
 use Goat\Runner\RunnerInterface;
-use MakinaCorpus\EventSourcing\Event;
-use MakinaCorpus\EventSourcing\EventStore;
-use MakinaCorpus\EventSourcing\EventStoreFactory;
+use MakinaCorpus\EventSourcing\EventStore\Event;
+use MakinaCorpus\EventSourcing\EventStore\EventStore;
+use MakinaCorpus\EventSourcing\EventStore\EventStoreFactory;
 
 final class GoatEventStoreFactory implements EventStoreFactory
 {

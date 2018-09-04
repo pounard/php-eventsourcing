@@ -1,9 +1,9 @@
 <?php
 
-namespace MakinaCorpus\EventSourcing\Tests;
+namespace MakinaCorpus\EventSourcing\EventStore\Tests;
 
+use MakinaCorpus\EventSourcing\EventStore\Event;
 use PHPUnit\Framework\TestCase;
-use MakinaCorpus\EventSourcing\Event;
 use Ramsey\Uuid\Uuid;
 
 /**
