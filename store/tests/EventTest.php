@@ -4,7 +4,6 @@ namespace MakinaCorpus\EventSourcing\EventStore\Tests;
 
 use MakinaCorpus\EventSourcing\EventStore\Event;
 use PHPUnit\Framework\TestCase;
-use Ramsey\Uuid\Uuid;
 
 /**
  * All other event class methods are implicitely tested along other tests, this test
@@ -37,22 +36,5 @@ class EventTest extends TestCase
         $this->assertNotEmpty($lastError);
         $this->assertArrayHasKey('message', $lastError);
         $this->assertContains('does not extend', $lastError['message']);
-    }
-
-    public function testRootAggregate()
-    {
-        $aggregateId = Uuid::uuid4();
-        $otherAggregateId = Uuid::uuid4();
-
-        $event = Event::createFor('some_name', $aggregateId);
-        $this->assertFalse($event->hasRootAggregate());
-
-        // Using the same UUID, it should consider it doesn't have a root aggregate identifier
-        $event = Event::createFor('some_name', $aggregateId, [], $aggregateId);
-        $this->assertFalse($event->hasRootAggregate());
-
-        // In other hand, with a different, it should check
-        $event = Event::createFor('some_name', $aggregateId, [], $otherAggregateId);
-        $this->assertTrue($event->hasRootAggregate());
     }
 }

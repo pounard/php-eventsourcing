@@ -11,9 +11,10 @@ use Ramsey\Uuid\UuidInterface;
  * EventStores must all support all filters, the only allowed limited support is for
  * the arbitrary event values: if driver does not support it, it must raise exceptions.
  */
-final class ConcretEventQuery implements EventQuery
+final class ConcreteEventQuery implements EventQuery
 {
     private $aggregateId;
+    private $aggregateTypes = [];
     private $arbitraryDataFilters = [];
     private $backendSupportsArbitraryFilters = false;
     private $dateHigherBound;
@@ -22,7 +23,6 @@ final class ConcretEventQuery implements EventQuery
     private $position = 0;
     private $reverse = false;
     private $revision = 0;
-    private $rootAggregateId;
 
     /**
      * Default constructor
@@ -89,9 +89,11 @@ final class ConcretEventQuery implements EventQuery
     /**
      * {@inheritdoc}
      */
-    public function withRoot($rootAggregateId): EventQuery
+    public function withType($typeOrTypes): EventQuery
     {
-        $this->rootAggregateId = $this->validateUuid($rootAggregateId);
+        \assert(\is_array($typeOrTypes) || \is_string($typeOrTypes));
+
+        $this->aggregateTypes = \array_unique($this->aggregateTypes += \array_values((array)$typeOrTypes));
 
         return $this;
     }
@@ -103,7 +105,7 @@ final class ConcretEventQuery implements EventQuery
     {
         \assert(\is_array($nameOrNames) || \is_string($nameOrNames));
 
-        $this->names += \array_values((array)$nameOrNames);
+        $this->names = \array_unique($this->names += \array_values((array)$nameOrNames));
 
         return $this;
     }
@@ -204,23 +206,11 @@ final class ConcretEventQuery implements EventQuery
     }
 
     /**
-     * Has root aggregate filter
+     * Get aggregate types filter
      */
-    public function hasRootAggregateId(): bool
+    public function getAggregateTypes(): array
     {
-        return null !== $this->rootAggregateId;
-    }
-
-    /**
-     * Get root aggregate filter
-     */
-    public function getRootAggregateId(): UuidInterface
-    {
-        if (!$this->rootAggregateId) {
-            throw new \BadMethodCallException(\sprintf("Query has no root aggregate identifier set, please call hasAggregateId() first"));
-        }
-
-        return $this->rootAggregateId;
+        return $this->aggregateTypes;
     }
 
     /**

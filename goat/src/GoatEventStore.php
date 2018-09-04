@@ -5,7 +5,7 @@ namespace MakinaCorpus\EventSourcing\Goat;
 use Goat\Query\Query;
 use Goat\Runner\RunnerInterface;
 use Goat\Runner\Transaction;
-use MakinaCorpus\EventSourcing\EventStore\ConcretEventQuery;
+use MakinaCorpus\EventSourcing\EventStore\ConcreteEventQuery;
 use MakinaCorpus\EventSourcing\EventStore\Event;
 use MakinaCorpus\EventSourcing\EventStore\EventQuery;
 use MakinaCorpus\EventSourcing\EventStore\EventStore;
@@ -76,9 +76,9 @@ final class GoatEventStore implements EventStore
                 ->insertValues($this->tableName)
                 ->values([
                     'aggregate_id' => $aggregateId,
+                    'aggregate_type' => $event->getAggregateType(),
                     'revision' => $nextRevisionId,
                     'created_at' => $event->createdAt(),
-                    'root_aggregate_id' => $event->getRootAggregateId(),
                     'name' => $event->getName(),
                     'data' => $data,
                     'is_published' => $event->isPublished(),
@@ -121,7 +121,7 @@ final class GoatEventStore implements EventStore
     /**
      * Create proper goat query and feed event stream with
      */
-    private function queryEvents(ConcretEventQuery $query): GoatEventStream
+    private function queryEvents(ConcreteEventQuery $query): GoatEventStream
     {
         $select = $this->runner->select($this->tableName);
         $where = $select->getWhere();
@@ -130,11 +130,11 @@ final class GoatEventStore implements EventStore
         if ($names = $query->getEventNames()) {
             $where->isIn('name', $names);
         }
+        if ($types = $query->getAggregateTypes()) {
+            $where->isIn('aggregate_type', $types);
+        }
         if ($query->hasAggregateId()) {
             $where->isEqual('aggregate_id', (string)$query->getAggregateId());
-        }
-        if ($query->hasRootAggregateId()) {
-            $where->isEqual('root_aggregate_id', (string)$query->getRootAggregateId());
         }
         if ($dates[0] && $dates[1]) {
             $where->isBetween('created_at', $dates[0], $dates[1]);
@@ -181,7 +181,7 @@ final class GoatEventStore implements EventStore
      */
     public function createQuery(): EventQuery
     {
-        return new ConcretEventQuery(false);
+        return new ConcreteEventQuery(false);
     }
 
     /**
@@ -203,7 +203,7 @@ final class GoatEventStore implements EventStore
     /**
      * {@inheritdoc}
      */
-    public function getEventsWith(ConcretEventQuery $query): EventStream
+    public function getEventsWith(ConcreteEventQuery $query): EventStream
     {
         return $this->queryEvents($query);
     }

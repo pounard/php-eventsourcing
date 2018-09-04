@@ -23,10 +23,10 @@ abstract class EventStoreTest extends TestCase
      */
     public function testStoreReturn(EventStore $store)
     {
-        $userEvent = Event::create('event', ['foo' => 'bar']);
+        $userEvent = Event::create('event', ['foo' => 'bar'], 'this_is_a_type');
         $this->assertFalse($userEvent->isStored());
-        $this->assertNotEmpty($uuid = $userEvent->getAggregateId());
-        $this->assertSame((string)$uuid, (string)$userEvent->getRootAggregateId());
+        $this->assertNotEmpty($userUuid = $userEvent->getAggregateId());
+        $this->assertSame('this_is_a_type', $userEvent->getAggregateType());
         $this->assertFalse($userEvent->isPublished());
         $this->assertEmpty($userEvent->getPosition());
         $this->assertEmpty($userEvent->getRevision());
@@ -39,9 +39,10 @@ abstract class EventStoreTest extends TestCase
         $this->assertFalse($event->isPublished());
         $this->assertLessThan(new \DateTimeImmutable(), $event->createdAt());
         $this->assertSame('event', $event->getName());
-        $this->assertNotEmpty($uuid = $event->getAggregateId());
+        $this->assertTrue($userUuid->equals($event->getAggregateId()));
+        $this->assertNotEmpty($event->getAggregateId());
         $this->assertTrue($event->isStored());
-        $this->assertSame((string)$uuid, (string)$event->getRootAggregateId());
+        $this->assertSame('this_is_a_type', $event->getAggregateType());
     }
 
     /**
@@ -65,12 +66,18 @@ abstract class EventStoreTest extends TestCase
     }
 
     /**
+     * @return string[]
+     */
+    private function getRandomTypes(): array
+    {
+        return [Event::TYPE_DEFAULT, 'article', 'project', 'user', 'event'];
+    }
+
+    /**
      * @return \Ramsey\Uuid\UuidInterface[]
      */
-    private function generateLotsAndLotsOfEvents(EventStore $store, \DateTime $startDate, array $names, $count, $moreRoots = false): array
+    private function generateLotsAndLotsOfEvents(EventStore $store, \DateTime $startDate, array $names, array $types, $count): array
     {
-        $max = count($names) - 1;
-
         $setDate = \Closure::bind(
             function (Event $event, \DateTimeInterface $date) {
                 $event->createdAt = clone $date;
@@ -85,17 +92,12 @@ abstract class EventStoreTest extends TestCase
 
         for ($i = 0; $i < $count; ++$i) {
 
-            $name = $names[\rand(0, $max)];
+            $name = $names[\rand(0, count($names) - 1)];
+            $type = $types[\rand(0, count($types) - 1)];
+
             $addAttr = rand(0, 10) < 3; // 30% chances too
             $startDate = $startDate->add(new \DateInterval("PT10M")); // +10 min each event
-
-            if ($moreRoots) {
-                $isNew = !$aggregates || rand(0, 100) < 10; // 10% chances
-                $withRoot = $aggregates && rand(0, 100) < 90; // 90% chances
-            } else {
-                $isNew = !$aggregates || rand(0, 100) < 30; // 30% chances
-                $withRoot = $aggregates && rand(0, 100) < 30; // 30% chances
-            }
+            $isNew = !$aggregates || rand(0, 100) < 30; // 30% chances
 
             $data = [];
             if ($addAttr) {
@@ -107,12 +109,7 @@ abstract class EventStoreTest extends TestCase
                 $aggregates[] = $event->getAggregateId();
             } else {
                 $aggregateId = $aggregates[rand(0, count($aggregates) - 1)];
-                if ($withRoot) {
-                    $rootAggregateId = $aggregates[rand(0, count($aggregates) - 1)];
-                    $event = Event::createFor($name, $rootAggregateId, $data);
-                } else {
-                    $event = Event::createFor($name, $aggregateId, $data);
-                }
+                $event = Event::createFor($name, $aggregateId, $data, $type);
             }
 
             $setDate($event, $startDate); // Force date
@@ -135,9 +132,9 @@ abstract class EventStoreTest extends TestCase
     public function testStoreQueryByName(EventStore $store)
     {
         $count = $this->getDefaultCount();
-        $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $count);
+        $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         foreach ($store->getEventsWith($store->createQuery()->withName(EventThatInherits::class)) as $event) {
             $this->assertInstanceOf(EventThatInherits::class, $event);
         }
@@ -149,16 +146,16 @@ abstract class EventStoreTest extends TestCase
     public function testStoreQueryFromDate(EventStore $store)
     {
         $count = $this->getDefaultCount();
-        $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $count);
+        $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
         $reference = new \DateTime('now +50 minute');
 
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         foreach ($store->getEventsWith($store->createQuery()->fromDate($reference)) as $event) {
             $this->assertGreaterThan($reference, $event->createdAt());
         }
 
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         foreach ($store->getEventsWith($store->createQuery()->fromDate($reference)->reverse()) as $event) {
             $this->assertLessThan($reference, $event->createdAt());
         }
@@ -170,18 +167,18 @@ abstract class EventStoreTest extends TestCase
     public function testStoreQueryWithDateBounds(EventStore $store)
     {
         $count = $this->getDefaultCount();
-        $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $count);
+        $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
         $from = new \DateTime('now +50 minute');
         $to = new \DateTime('now 2 hour');
 
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         foreach ($store->getEventsWith($store->createQuery()->betweenDates($from, $to)) as $event) {
             $this->assertGreaterThan($from, $event->createdAt());
             $this->assertLessThan($to, $event->createdAt());
         }
 
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         foreach ($store->getEventsWith($store->createQuery()->betweenDates($to, $from)->reverse()) as $event) {
             $this->assertGreaterThan($from, $event->createdAt());
             $this->assertLessThan($to, $event->createdAt());
@@ -194,7 +191,7 @@ abstract class EventStoreTest extends TestCase
     public function testStoreQueryByAggregate(EventStore $store)
     {
         $count = $this->getDefaultCount();
-        list(,, $aggregates) = $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $count);
+        list(,, $aggregates) = $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
         // This can only work if we have one or more aggregates
         $this->assertGreaterThan(1, count($aggregates));
@@ -202,7 +199,7 @@ abstract class EventStoreTest extends TestCase
         /** @var \Ramsey\Uuid\UuidInterface $aggregateId */
         $aggregateId = $aggregates[rand(0, count($aggregates) - 1)];
 
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         $total = 0;
         foreach ($store->getEventsWith($store->createQuery()->for($aggregateId)) as $event) {
             $this->assertTrue($aggregateId->equals($event->getAggregateId()));
@@ -214,21 +211,18 @@ abstract class EventStoreTest extends TestCase
     /**
      * @dataProvider getEventStore
      */
-    public function testStoreQueryByRootAggregate(EventStore $store)
+    public function testStoreQueryByAggregateType(EventStore $store)
     {
         $count = $this->getDefaultCount();
-        list(,, $aggregates) = $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $count);
+        list (,, $aggregates) = $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
         // This can only work if we have one or more aggregates
         $this->assertGreaterThan(1, count($aggregates));
 
-        /** @var \Ramsey\Uuid\UuidInterface $aggregateId */
-        $aggregateId = $aggregates[rand(0, count($aggregates) - 1)];
-
         $total = 0;
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
-        foreach ($store->getEventsWith($store->createQuery()->withRoot($aggregateId)) as $event) {
-            $this->assertTrue($aggregateId->equals($event->getRootAggregateId()));
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
+        foreach ($store->getEventsWith($store->createQuery()->withType(['article', 'project'])) as $event) {
+            $this->assertContains($event->getAggregateType(), ['article', 'project']);
             $total++;
         }
         $this->assertLessThan($count, $total);
@@ -240,11 +234,11 @@ abstract class EventStoreTest extends TestCase
     public function testStoreQueryByPosition(EventStore $store)
     {
         $count = $this->getDefaultCount();
-        list($min, $max) = $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $count);
+        list($min, $max) = $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
         $startWith = (int)($min + floor(($max - $min) / 2));
 
         $first = null;
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         foreach ($store->getEventsWith($store->createQuery()->fromPosition($startWith)) as $event) {
             if (!$first) {
                 $first = $event->getPosition();
@@ -255,7 +249,7 @@ abstract class EventStoreTest extends TestCase
         }
 
         $first = null;
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         foreach ($store->getEventsWith($store->createQuery()->fromPosition($startWith)->reverse()) as $event) {
             if (!$first) {
                 $first = $event->getPosition();
@@ -272,13 +266,13 @@ abstract class EventStoreTest extends TestCase
     public function testStoreQueryByRevision(EventStore $store)
     {
         $count = $this->getDefaultCount();
-        list(,, $aggregates) = $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $count, true);
+        list(,, $aggregates) = $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
         /** @var \Ramsey\Uuid\UuidInterface $aggregateId */
         $aggregateId = $aggregates[rand(0, count($aggregates) - 1)];
 
         $first = null;
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         foreach ($store->getEventsWith($store->createQuery()->for($aggregateId)->fromRevision(2)) as $event) {
             if (!$first) {
                 $first = $event->getRevision();
@@ -289,7 +283,7 @@ abstract class EventStoreTest extends TestCase
         }
 
         $first = null;
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         foreach ($store->getEventsWith($store->createQuery()->for($aggregateId)->fromRevision(2)->reverse()) as $event) {
             if (!$first) {
                 $first = $event->getRevision();
@@ -306,12 +300,12 @@ abstract class EventStoreTest extends TestCase
     public function testStoreQueryAll(EventStore $store)
     {
         $count = $this->getDefaultCount();
-        $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $count);
+        $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
         $previous = null;
         $previousPosition = null;
         $total = 0;
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         foreach ($store->getAllEvents() as $event) {
             if ($previous) {
                 $this->assertGreaterThan($previous, $event->createdAt());
@@ -326,7 +320,7 @@ abstract class EventStoreTest extends TestCase
         $previous = null;
         $previousPosition = null;
         $total = 0;
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         foreach ($store->getEventsWith($store->createQuery()->reverse()) as $event) {
             if ($previous) {
                 $this->assertLessThan($previous, $event->createdAt());

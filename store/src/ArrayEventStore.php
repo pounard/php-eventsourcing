@@ -64,9 +64,9 @@ final class ArrayEventStore implements EventStore
     public function store(Event $event): Event
     {
         $aggregateId = $event->getAggregateId();
+        $aggregateType = $event->getAggregateType();
         $position = $this->getPositionFor();
         $revision = $this->getRevisionFor($aggregateId);
-        $rootAggregateId = $event->getRootAggregateId();
 
         // Normalize output, and check for errors at the same time
         if (false === ($data = \json_encode($event->getData()))) {
@@ -80,7 +80,7 @@ final class ArrayEventStore implements EventStore
             $position,
             $aggregateId,
             $revision,
-            $rootAggregateId,
+            $aggregateType,
             $event->createdAt(),
             $event->getName(),
             $data,
@@ -100,7 +100,7 @@ final class ArrayEventStore implements EventStore
         return $this->events;
     }
 
-    private function queryEvents(ConcretEventQuery $query): ArrayEventStream
+    private function queryEvents(ConcreteEventQuery $query): ArrayEventStream
     {
         return new ArrayEventStream($this, $query);
     }
@@ -110,7 +110,7 @@ final class ArrayEventStore implements EventStore
      */
     public function createQuery(): EventQuery
     {
-        return new ConcretEventQuery(false);
+        return new ConcreteEventQuery(false);
     }
 
     /**
@@ -132,7 +132,7 @@ final class ArrayEventStore implements EventStore
     /**
      * {@inheritdoc}
      */
-    public function getEventsWith(ConcretEventQuery $query): EventStream
+    public function getEventsWith(ConcreteEventQuery $query): EventStream
     {
         return $this->queryEvents($query);
     }

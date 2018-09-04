@@ -34,5 +34,5 @@ interface EventStore
     /**
      * @return EventStream|Event[]
      */
-    public function getEventsWith(ConcretEventQuery $query): EventStream;
+    public function getEventsWith(ConcreteEventQuery $query): EventStream;
 }

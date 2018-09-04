@@ -20,9 +20,7 @@ performing, very stable, and very well documented set of libraries.
 It implements the following:
 
  * complete and functionnal event store interface with store and query abilities,
-
  * in-memory array-based event store implementation allowing test-driven development,
-
  * https://github.com/pounard/goat database connector implementation fully working with
    PDO MySQL, PDO PgSQL and ext_pgsql drivers.
 
@@ -37,32 +35,40 @@ and well tested enough, it might be one day a full-fledged production-ready proj
 
 Wish-list, in order of preference and needs:
 
- * test it even more,
+ * [x] add a 'type' column for aggregate identity, with no constraint at the store level,
+ * [_] test it even more,
+ * [_] implement a basic event emitter and event listener API,
+ * [_] implement a basic aggregate-based event-driven domain oriented API layer implemented
+   using generic store factory decorators,
+ * [_] very large volume benchmarking,
+ * [_] configuration-based event namespace storage partionning API implemented using generic
+   store factory decorators,
+ * [_] transaction support if the other databases are using the same driver as the event store,
+ * [_] published/failed status in event table,
+ * [_] Symfony light bundle with a few dependency injection passes (also would be working for
+   Drupal 8) in order to register events and aggregates,
+ * [_] better configuration abilities for goat factory,
+ * [_] snapshort storage and API,
+ * [_] helpers to use it along Symfony's Messenger component,
+ * [_] Drupal 7 driver for event store,
+ * [_] Drupal 8 driver for event store.
 
- * implement a basic event emitter and event listener API,
+# Pouet
 
- * implement a basic aggregate-based event-driven domain oriented API layer
-   implemented using generic store factory decorators,
-
- * very large volume benchmarking,
-
- * configuration-based event namespace storage partionning API implemented using
-   generic store factory decorators,
-
- * transaction support if the other databases are using the same driver as the
-   event store,
-
- * published/failed status in event table,
-
- * Symfony light bundle with a few dependency injection passes (also would be
-   working for Drupal 8) in order to register events and aggregates,
-
- * better configuration abilities for goat factory,
-
- * snapshort storage and API,
-
- * helpers to use it along Symfony's Messenger component,
-
- * Drupal 7 driver for event store,
-
- * Drupal 8 driver for event store.
+ *   - store in-memory event using a decorator over the event store/event store factory
+ *     - if so, wrap with a transaction
+ *     - write everything when it goes OK
+ *   - namespace in event store should be an instance of Namespace object
+ *      - if object is dynamic (tokens with, for example, date or able to partition)
+ *        then the real end namespace will be dynamically computed on each run
+ *      - NOT sure this is a good idea
+ *   - write a generic implementation of aggregate that self-defines it fields (such as
+ *     drupal 8 entity system)
+ *       - use Symfony validation component for validation, base dynamic field definition
+ *         upon object internal properties
+ *       - allow read-only and read-write properties
+ *       - define generic update event and when() handler that supports it with a dynamic
+ *         event name
+ *       - define a generic command implementation for updates that check for
+ *         allowed values
+ *       - define a generic handler implementation that validates the allowed values

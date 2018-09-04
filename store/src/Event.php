@@ -8,11 +8,13 @@ use Ramsey\Uuid\UuidInterface;
 class Event
 {
     const NAMESPACE_DEFAULT = 'global';
+    const TYPE_DEFAULT = 'none';
 
     /**
      * @var UuidInterface
      */
     private $aggregateId;
+    private $aggregateType;
     private $createdAt;
     private $data;
     private $isPublished = false;
@@ -20,7 +22,6 @@ class Event
     private $namespace = Event::NAMESPACE_DEFAULT;
     private $position = 0;
     private $revision = 0;
-    private $rootAggregateId;
 
     /**
      * Create event from name
@@ -63,7 +64,7 @@ class Event
         int $position,
         UuidInterface $aggregateId,
         int $revision,
-        $rootAggregateId,
+        $aggregateType,
         \DateTimeInterface $createdAt,
         string $name,
         array $data,
@@ -72,6 +73,7 @@ class Event
 
         $ret = self::createInstanceFromName($name);
         $ret->aggregateId = $aggregateId;
+        $ret->aggregateType = $aggregateType;
         $ret->createdAt = $createdAt;
         $ret->data = $data;
         $ret->isPublished = $isPublished;
@@ -79,7 +81,6 @@ class Event
         $ret->namespace = $namespace;
         $ret->position = $position;
         $ret->revision = $revision;
-        $ret->rootAggregateId = $rootAggregateId;
 
         return $ret;
     }
@@ -87,40 +88,43 @@ class Event
     /**
      * Create event for aggregate
      */
-    final public static function createFor(string $name, UuidInterface $aggregateId, array $data = [], UuidInterface $rootAggregateId = null): self
+    final public static function createFor(string $name, UuidInterface $aggregateId, array $data = [], string $aggregateType = null): self
     {
         $ret = self::createInstanceFromName($name);
         $ret->aggregateId = $aggregateId;
+        $ret->aggregateType = $aggregateType;
         $ret->data = $data;
-        $ret->rootAggregateId = $rootAggregateId;
 
         return $ret;
     }
 
-    final protected static function createWithClassFor(UuidInterface $aggregateId, array $data = []): self
+    final protected static function createWithClassFor(UuidInterface $aggregateId, array $data = [], string $aggregateType = null): self
     {
         $ret = new static();
         $ret->aggregateId = Uuid::uuid4();
+        $ret->aggregateType = $aggregateType;
         $ret->data = $data;
         $ret->name = \get_class($ret);
 
         return $ret;
     }
 
-    final protected static function createWithClass(array $data = []): self
+    final protected static function createWithClass(array $data = [], string $aggregateType = null): self
     {
         $ret = new static();
         $ret->aggregateId = Uuid::uuid4();
+        $ret->aggregateType = $aggregateType;
         $ret->data = $data;
         $ret->name = \get_class($ret);
 
         return $ret;
     }
 
-    final public static function create(string $name, array $data = []): self
+    final public static function create(string $name, array $data = [], string $aggregateType = null): self
     {
         $ret = self::createInstanceFromName($name);
         $ret->aggregateId = Uuid::uuid4();
+        $ret->aggregateType = $aggregateType;
         $ret->data = $data;
         $ret->name = $name;
 
@@ -160,19 +164,19 @@ class Event
     }
 
     /**
-     * Has this event a root aggregate?
+     * Has this event an aggregate type?
      */
-    final public function hasRootAggregate(): bool
+    final public function hasAggregateType(): bool
     {
-        return $this->rootAggregateId && !$this->aggregateId->equals($this->rootAggregateId);
+        return $this->aggregateType && self::TYPE_DEFAULT !== $this->aggregateType;
     }
 
     /**
-     * Get root aggregate identifier, or self identifier if none
+     * Get aggregate type
      */
-    final public function getRootAggregateId(): UuidInterface
+    final public function getAggregateType(): string
     {
-        return $this->rootAggregateId ?? $this->aggregateId;
+        return $this->aggregateType ?? self::TYPE_DEFAULT;
     }
 
     /**

@@ -30,11 +30,9 @@ interface EventQuery
     public function for($aggregateId): EventQuery;
 
     /**
-     * Fetch with aggregate root
-     *
-     * @param string|\Ramsey\Uuid\UuidInterface $rootAggregateId
+     * Fetch with aggregate type
      */
-    public function withRoot($rootAggregateId): EventQuery;
+    public function withType(string $aggregateType): EventQuery;
 
     /**
      * Fetch with the given event names

@@ -32,7 +32,7 @@ final class GoatEventStream implements \IteratorAggregate, EventStream
             // @todo Goat does not natively support UUID yet
             Uuid::fromString($row['aggregate_id']),
             $row['revision'],
-            Uuid::fromString($row['root_aggregate_id']),
+            $row['aggregate_type'],
             $row['created_at'],
             $row['name'],
             // Depending upon the backend driver, JSON type might not be supported

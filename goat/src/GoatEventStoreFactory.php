@@ -49,9 +49,9 @@ final class GoatEventStoreFactory implements EventStoreFactory
 CREATE TABLE IF NOT EXISTS "$tableName" (
     "position" bigserial NOT NULL,
     "aggregate_id" uuid NOT NULL,
+    "aggregate_type" varchar(128) NOT NULL DEFAULT 'none',
     "revision" integer NOT NULL,
     "created_at" timestamp NOT NULL DEFAULT NOW(),
-    "root_aggregate_id" uuid NOT NULL,
     "name" varchar(128) NOT NULL,
     "data" jsonb NOT NULL,
     "is_published" boolean NOT NULL,
@@ -66,9 +66,9 @@ QUERY
 CREATE TABLE IF NOT EXISTS $tableName (
     position INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     aggregate_id VARCHAR(36) NOT NULL,
+    aggregate_type VARCHAR(128) NOT NULL DEFAULT 'none',
     revision INTEGER UNSIGNED NOT NULL,
     created_at DATETIME NOT NULL DEFAULT NOW(),
-    root_aggregate_id VARCHAR(36) NOT NULL,
     name VARCHAR(128) NOT NULL,
     data text NOT NULL,
     is_published INTEGER UNSIGNED NOT NULL,

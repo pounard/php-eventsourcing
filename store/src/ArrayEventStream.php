@@ -18,6 +18,10 @@ final class ArrayEventStream implements \IteratorAggregate, EventStream
      */
     public function __construct(ArrayEventStore $store, EventQuery $query)
     {
+        if (!$query instanceof ConcreteEventQuery) {
+            throw new \InvalidArgumentException(\sprintf("Query must be a %s instance", ConcreteEventQuery::class));
+        }
+
         $this->store = $store;
         $this->query = $query;
     }
@@ -36,9 +40,9 @@ final class ArrayEventStream implements \IteratorAggregate, EventStream
         $position = $query->getStartPosition();
         $revision = $query->getStartRevision();
         $aggregateId = $query->hasAggregateId() ? $query->getAggregateId() : null;
-        $rootAggregateId = $query->hasRootAggregateId() ? $query->getRootAggregateId() : null;
+        $aggregateTypes = $query->getAggregateTypes();
 
-        /** @var \MakinaCorpus\EventSourcing\Event $event */
+        /** @var \MakinaCorpus\EventSourcing\EventStore\Event $event */
         foreach ($reverse ? \array_reverse($allEvents) : $allEvents as $event) {
 
             if ($names && !\in_array($event->getName(), $names)) {
@@ -67,7 +71,7 @@ final class ArrayEventStream implements \IteratorAggregate, EventStream
             if ($aggregateId && !$event->getAggregateId()->equals($aggregateId)) {
                 continue;
             }
-            if ($rootAggregateId && !$event->getRootAggregateId()->equals($rootAggregateId)) {
+            if ($aggregateTypes && !\in_array($event->getAggregateType(), $aggregateTypes)) {
                 continue;
             }
 
