@@ -17,6 +17,9 @@
         <testsuite name="EventSourcing store">
             <directory>./store/tests/</directory>
         </testsuite>
+        <testsuite name="EventSourcing domain model">
+            <directory>./domain/tests/</directory>
+        </testsuite>
         <testsuite name="EventSourcing Goat integration">
             <directory>./goat/tests/</directory>
         </testsuite>
@@ -24,9 +27,11 @@
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory>./domain/src</directory>
             <directory>./goat/src</directory>
             <directory>./store/src</directory>
             <exclude>
+                <directory>./domain/tests</directory>
                 <directory>./goat/tests</directory>
                 <directory>./store/tests</directory>
                 <directory>./vendor</directory>
