@@ -21,14 +21,7 @@ abstract class Aggregate
     private $revision = 0;
     private $updatedAt;
 
-    /**
-     * Normalize event or event class name
-     */
-    private static function normalizeName(string $name): string
-    {
-        // @todo this is ugly
-        return \implode('', \array_map('ucfirst', \preg_split('/[^a-zA-Z1-9]+/', $name)));
-    }
+
 
     /**
      * Get aggregate type, this is valid to override
@@ -135,7 +128,7 @@ abstract class Aggregate
     private function play(Event $event)
     {
         $eventName = $event->getName();
-        $methodName = 'when'.self::normalizeName($eventName);
+        $methodName = Event::getListenerName($eventName);
 
         if (\method_exists($this, $methodName)) {
             \call_user_func([$this, $methodName], $event);

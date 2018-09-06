@@ -25,6 +25,31 @@ class Event
     private $revision = 0;
 
     /**
+     * Normalize name to a camel cased method name
+     */
+    private static function normalizeName(string $name): string
+    {
+        // @todo this is ugly
+        return \implode('', \array_map('ucfirst', \preg_split('/[^a-zA-Z1-9]+/', $name)));
+    }
+
+    /**
+     * Get default listener method name
+     */
+    final public static function getDefaultListenerName(): string
+    {
+        return 'when';
+    }
+
+    /**
+     * Get event specific listener name for the given event name
+     */
+    final public static function getListenerName(string $eventName): string
+    {
+        return 'when'.self::normalizeName($eventName);
+    }
+
+    /**
      * Create event from name
      */
     final private static function createInstanceFromName(string $name): self
