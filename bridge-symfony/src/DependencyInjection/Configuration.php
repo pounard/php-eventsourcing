@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MakinaCorpus\EventSourcing\Bridge\Symfony\DependencyInjection;
 
 use Symfony\Component\Config\Definition\ConfigurationInterface;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MakinaCorpus\EventSourcing\Domain\Tests;
 
 use MakinaCorpus\EventSourcing\Domain\Repository;
@@ -17,14 +19,14 @@ class RepositoryTest extends TestCase
     public function testCannotUseNonExistingClasses()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageRegExp('/Class .* does not exist/');
+        $this->expectExceptionMessageRegExp('/Aggregate class .* does not exist/');
         $this->createRepository('Some_ReallyNon_Existing_Class');
     }
 
     public function testClassMustExtendAggregate()
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageRegExp('/Class .* does not extends .*Aggregate/');
+        $this->expectExceptionMessageRegExp('/Aggregate class .* must extend class .*Aggregate/');
         $this->createRepository(TestCase::class);
     }
 }

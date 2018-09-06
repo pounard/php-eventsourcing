@@ -1,14 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MakinaCorpus\EventSourcing\EventStore\Tests;
 
 use MakinaCorpus\EventSourcing\EventStore\Event;
 use MakinaCorpus\EventSourcing\EventStore\EventStore;
 use PHPUnit\Framework\TestCase;
 
-/**
- * Tests the views
- */
 abstract class EventStoreTest extends TestCase
 {
     /**
@@ -16,13 +15,12 @@ abstract class EventStoreTest extends TestCase
      * arrays, each array being an EventStore implementation. It can be
      * a generator.
      */
-    abstract public function getEventStore();
+    abstract public function getEventStore(): EventStore;
 
-    /**
-     * @dataProvider getEventStore
-     */
-    public function testStoreReturn(EventStore $store)
+    public function testStoreReturn()
     {
+        $store = $this->getEventStore();
+
         $userEvent = Event::create('event', ['foo' => 'bar'], 'this_is_a_type');
         $this->assertFalse($userEvent->isStored());
         $this->assertNotEmpty($userUuid = $userEvent->getAggregateId());
@@ -126,11 +124,10 @@ abstract class EventStoreTest extends TestCase
         return [$minPos, $maxPos, $aggregates];
     }
 
-    /**
-     * @dataProvider getEventStore
-     */
-    public function testStoreQueryByName(EventStore $store)
+    public function testStoreQueryByName()
     {
+        $store = $this->getEventStore();
+
         $count = $this->getDefaultCount();
         $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
@@ -140,11 +137,10 @@ abstract class EventStoreTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider getEventStore
-     */
-    public function testStoreQueryFromDate(EventStore $store)
+    public function testStoreQueryFromDate()
     {
+        $store = $this->getEventStore();
+
         $count = $this->getDefaultCount();
         $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
@@ -161,11 +157,10 @@ abstract class EventStoreTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider getEventStore
-     */
-    public function testStoreQueryWithDateBounds(EventStore $store)
+    public function testStoreQueryWithDateBounds()
     {
+        $store = $this->getEventStore();
+
         $count = $this->getDefaultCount();
         $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
@@ -185,11 +180,10 @@ abstract class EventStoreTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider getEventStore
-     */
-    public function testStoreQueryByAggregate(EventStore $store)
+    public function testStoreQueryByAggregate()
     {
+        $store = $this->getEventStore();
+
         $count = $this->getDefaultCount();
         list(,, $aggregates) = $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
@@ -208,11 +202,10 @@ abstract class EventStoreTest extends TestCase
         $this->assertLessThan($count, $total);
     }
 
-    /**
-     * @dataProvider getEventStore
-     */
-    public function testStoreQueryByAggregateType(EventStore $store)
+    public function testStoreQueryByAggregateType()
     {
+        $store = $this->getEventStore();
+
         $count = $this->getDefaultCount();
         list (,, $aggregates) = $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
@@ -228,11 +221,10 @@ abstract class EventStoreTest extends TestCase
         $this->assertLessThan($count, $total);
     }
 
-    /**
-     * @dataProvider getEventStore
-     */
-    public function testStoreQueryByPosition(EventStore $store)
+    public function testStoreQueryByPosition()
     {
+        $store = $this->getEventStore();
+
         $count = $this->getDefaultCount();
         list($min, $max) = $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
         $startWith = (int)($min + floor(($max - $min) / 2));
@@ -260,11 +252,10 @@ abstract class EventStoreTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider getEventStore
-     */
-    public function testStoreQueryByRevision(EventStore $store)
+    public function testStoreQueryByRevision()
     {
+        $store = $this->getEventStore();
+
         $count = $this->getDefaultCount();
         list(,, $aggregates) = $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 
@@ -294,11 +285,10 @@ abstract class EventStoreTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider getEventStore
-     */
-    public function testStoreQueryAll(EventStore $store)
+    public function testStoreQueryAll()
     {
+        $store = $this->getEventStore();
+
         $count = $this->getDefaultCount();
         $this->generateLotsAndLotsOfEvents($store, new \DateTime(), $this->getRandomNames(), $this->getRandomTypes(), $count);
 

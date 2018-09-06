@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MakinaCorpus\EventSourcing\Domain\Repository;
 
 use MakinaCorpus\EventSourcing\Domain\Aggregate;

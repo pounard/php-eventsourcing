@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MakinaCorpus\EventSourcing\Domain\Entity;
 
 use MakinaCorpus\EventSourcing\Domain\Command;

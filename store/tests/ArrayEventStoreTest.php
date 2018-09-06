@@ -1,19 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MakinaCorpus\EventSourcing\EventStore\Tests;
 
 use MakinaCorpus\EventSourcing\EventStore\ArrayEventStoreFactory;
+use MakinaCorpus\EventSourcing\EventStore\EventStore;
 
-/**
- * Tests the views
- */
 final class ArrayEventStoreTest extends EventStoreTest
 {
     /**
      * {@inheritdoc}
      */
-    public function getEventStore()
+    public function getEventStore(): EventStore
     {
-        yield [(new ArrayEventStoreFactory())->getEventStore(\uniqid('test-'))];
+        return (new ArrayEventStoreFactory())->getEventStore(\uniqid('test-'));
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace MakinaCorpus\EventSourcing\Domain;
 
 use MakinaCorpus\EventSourcing\Domain\Repository\DefaultRepository;
