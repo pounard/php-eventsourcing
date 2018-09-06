@@ -1,6 +1,6 @@
 {
     "name": "makinacorpus/eventsourcing",
-    "description": "Event sourcing educational project",
+    "description": "Event sourcing and domain model educational project",
     "type": "library",
     "license": "GPL-2.0-or-later",
     "authors": [
@@ -26,9 +26,16 @@
         "ramsey/uuid": "^4"
     },
     "require-dev": {
-        "phpunit/phpunit": "^7",
         "makinacorpus/goat": "dev-master",
-        "symfony/messenger": "^4.1"
+        "phpunit/phpunit": "^7",
+        "symfony/messenger": "^4.1",
+        "symfony/validator": "^4.1",
+        "symfony/yaml": "^4.1"
+    },
+    "suggest": {
+        "makinacorpus/goat": "Enabled goat database driver for event store",
+        "symfony/messenger": "Easier command bus development with a well maintained component",
+        "symfony/validator": "Allow automatic aggregate based entities to be validated transparently"
     },
     "autoload": {
         "psr-4": {

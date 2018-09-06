@@ -4,6 +4,7 @@ namespace MakinaCorpus\EventSourcing\Domain\Entity;
 
 use MakinaCorpus\EventSourcing\Domain\Handler;
 use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @todo
@@ -12,6 +13,13 @@ use Symfony\Component\Messenger\Handler\MessageSubscriberInterface;
  */
 class AggregateEntityHandler extends Handler implements MessageSubscriberInterface
 {
+    private $validator;
+
+    public function setValidator(ValidatorInterface $validator)
+    {
+        $this->validator = $validator;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -23,6 +31,38 @@ class AggregateEntityHandler extends Handler implements MessageSubscriberInterfa
         return [
             AggregateEntityUpdateCommand::class => 'onAggregateEntityUpdate',
         ];
+    }
+
+    /**
+     * Ensure there is no extra fields, call validator if necessary
+     */
+    private function validateFields(AggregateEntity $aggregate, array $data)
+    {
+        $updatedPropertyNames = \array_keys($data);
+
+        $allowedFields = $aggregate::getAllowedFields();
+        if ($extraFields = \array_diff($updatedPropertyNames, $allowedFields)) {
+              throw new \InvalidArgumentException(\sprintf('"%s" are not allowed properties for class %s', \implode('", "', $extraFields), \get_class($aggregate)));
+        }
+
+        if ($this->validator) { // Validator component support is optional.
+            $messages = [];
+
+            foreach ($updatedPropertyNames as $propertyName) {
+                $violations = $this->validator->validateProperty($aggregate, $propertyName);
+
+                if ($violations->count()) {
+                    /** @var \Symfony\Component\Validator\ConstraintViolationInterface $violation */
+                    foreach ($violations as $violation) {
+                        $messages[] = \sprintf("%s: %s", $violation->getPropertyPath(), $violation->getMessage());
+                    }
+                }
+            }
+
+            if ($messages) {
+                throw new \InvalidArgumentException(\sprintf("Validation error: %s", \implode(', ' , $messages)));
+            }
+        }
     }
 
     /**
@@ -41,11 +81,9 @@ class AggregateEntityHandler extends Handler implements MessageSubscriberInterfa
         }
 
         try {
-            // @todo check for allowed fields
-            // @todo use symfony validator to validate data
-            // @todo always let exceptions pass
+            $this->validateFields($aggregate, $data = $command->getUpdatedData());
 
-            $aggregate->updateWith($command->getUpdatedData());
+            $aggregate->updateWith($data);
 
         } catch (\Throwable $e) {
             $aggregate->updateFailedWith($command->getUpdatedData(), $e->getMessage());

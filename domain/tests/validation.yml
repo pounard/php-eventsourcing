@@ -1,0 +1,8 @@
+MakinaCorpus\EventSourcing\Domain\Tests\MockAggregateEntity:
+    properties:
+        foo:
+            - GreaterThan: 10
+        bar:
+            - Type: string
+        someOtherProperty:
+            - NotNull: ~
