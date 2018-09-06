@@ -17,10 +17,32 @@ class DefaultRepository implements Repository
     private $eventStore;
 
     /**
-     * Default constructor
+     * {@inheritdoc}
      */
-    public function __construct(string $className, EventStore $eventStore)
+    static public function getAggregateClassName(): string
     {
+        throw new \BadMethodCallException(\sprintf(
+            "%s::%s() method must not be called on the default implementation, %s class must override it.",
+            Repository::class,  __METHOD__, \get_called_class()
+        ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    static public function getAggregateType(): string
+    {
+        return self::getAggregateClassName();
+    }
+
+    /**
+     * Called when object is going thought the factory for the first time
+     */
+    final public function setClassName(string $className)
+    {
+        if ($this->className) {
+            throw new \InvalidArgumentException("Repository cannot be initialized twice");
+        }
         if (!\class_exists($className)) {
             throw new \InvalidArgumentException(\sprintf("Class %s does not exist", $className));
         }
@@ -29,16 +51,18 @@ class DefaultRepository implements Repository
         }
 
         $this->className = $className;
-        $this->eventStore = $eventStore;
-
-        $this->init();
     }
 
     /**
-     * Called when object is built.
+     * Called when object is going thought the factory for the first time
      */
-    protected function init()
+    final public function setEventStore(EventStore $eventStore)
     {
+        if ($this->eventStore) {
+            throw new \InvalidArgumentException("Repository cannot be initialized twice");
+        }
+
+        $this->eventStore = $eventStore;
     }
 
     /**

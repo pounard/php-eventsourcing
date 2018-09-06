@@ -1,0 +1,14 @@
+services:
+    _defaults:
+        public: false
+
+    eventsourcing.factory:
+        class: MakinaCorpus\EventSourcing\Goat\GoatEventStoreFactory
+        arguments: ['@goat.session']
+
+    MakinaCorpus\EventSourcing\EventStore\EventStoreFactory:
+        alias: eventsourcing.factory
+
+    eventsourcing.repository_factory:
+        class: MakinaCorpus\EventSourcing\Domain\RepositoryFactory
+        arguments: ['@eventsourcing.factory', [], []]

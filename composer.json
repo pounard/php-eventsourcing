@@ -22,30 +22,34 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=7.1",
+        "php": "^7.1",
         "ramsey/uuid": "^4"
     },
     "require-dev": {
         "makinacorpus/goat": "dev-master",
         "phpunit/phpunit": "^7",
+        "symfony/dependency-injection": "^3.4 || ^4",
         "symfony/messenger": "^4.1",
-        "symfony/validator": "^4.1",
-        "symfony/yaml": "^4.1"
+        "symfony/validator": "^3.4 || ^4",
+        "symfony/yaml": "^3.4 || ^4"
     },
     "suggest": {
-        "makinacorpus/goat": "Enabled goat database driver for event store",
+        "makinacorpus/goat-bundle": "Enabled goat database driver for event store",
+        "symfony/dependency-injection": "For registering services into the container",
         "symfony/messenger": "Easier command bus development with a well maintained component",
         "symfony/validator": "Allow automatic aggregate based entities to be validated transparently"
     },
     "autoload": {
         "psr-4": {
+            "MakinaCorpus\\EventSourcing\\Bridge\\Symfony\\": "bridge-symfony/src/",
             "MakinaCorpus\\EventSourcing\\Domain\\": "domain/src/",
-            "MakinaCorpus\\EventSourcing\\Goat\\": "goat/src/",
-            "MakinaCorpus\\EventSourcing\\EventStore\\": "store/src/"
+            "MakinaCorpus\\EventSourcing\\EventStore\\": "store/src/",
+            "MakinaCorpus\\EventSourcing\\Goat\\": "goat/src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
+            "MakinaCorpus\\EventSourcing\\Bridge\\Symfony\\Tests\\": "bridge-symfony/tests/",
             "MakinaCorpus\\EventSourcing\\Domain\\Tests\\": "domain/tests/",
             "MakinaCorpus\\EventSourcing\\Goat\\Tests\\": "goat/tests/",
             "MakinaCorpus\\EventSourcing\\EventStore\\Tests\\": "store/tests/"

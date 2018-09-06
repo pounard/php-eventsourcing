@@ -2,83 +2,110 @@
 
 namespace MakinaCorpus\EventSourcing\Domain;
 
-use App\Aggregate\MailDefinition;
-use App\Repository\MailDefinitionRepository;
 use MakinaCorpus\EventSourcing\Domain\Repository\DefaultRepository;
 use MakinaCorpus\EventSourcing\EventStore\Event;
 use MakinaCorpus\EventSourcing\EventStore\EventStoreFactory;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-/**
- * Aggregate repository can only create and load instances, in the event
- * sourcing database model, update and delete operations don't exist.
- *
- * By contrast to more common CRUD based-model, create() operation does
- * not store anything, but creates an empty instance, aggregate will only
- * be created when events will be sent with its aggregate identifier.
- *
- * In this class, the only method that actually hits a database is load().
- */
 final class RepositoryFactory
 {
+    private $container;
     private $eventStoreFactory;
     private $namespaceMap;
     private $repositories;
     private $services;
+    private $typeToClassMap;
 
     /**
      * Default constructor
      */
-    public function __construct(EventStoreFactory $eventStoreFactory, array $namespaceMap = [], array $services = [])
+    public function __construct(EventStoreFactory $eventStoreFactory, array $typeToClassMap = [], array $services = [], array $namespaceMap = [])
     {
         $this->eventStoreFactory = $eventStoreFactory;
-        // @todo do not validate in production mode?
-        $this->namespaceMap = $this->validateNamespaces($namespaceMap);
-        $this->services = $this->validateServices($services);
-
-        // @todo Fix this...
-        $this->services = [
-            MailDefinition::class => MailDefinitionRepository::class,
-        ];
+        $this->namespaceMap = $namespaceMap;
+        $this->services = $services;
+        $this->typeToClassMap = $typeToClassMap;
     }
 
-    private function validateNamespaces(array $namespaces): array
+    /**
+     * Set container
+     */
+    public function setContainer(ContainerInterface $container)
     {
-        foreach ($namespaces as $className => $namespace) {
-            if (!\is_string($namespace)) {
-                throw new \InvalidArgumentException(\sprintf("Namespace for %s is not a string", $className));
-            }
-        }
-        return $namespaces;
+        $this->container = $container;
     }
 
-    private function validateServices(array $services): array
+    /**
+     * Get target class name for given aggregate type
+     */
+    private function getClassNameForType(string $aggregateType): string
     {
-        foreach ($services as $className => $service) {
-            if (!$service instanceof Repository) {
-                throw new \InvalidArgumentException(\sprintf("Repository service for class %s does not implement %s", $className, Repository::class));
+        return $this->typeToClassMap[$aggregateType] ?? $aggregateType;
+    }
+
+    /**
+     * Get namespace for aggregate type
+     */
+    private function getNamespaceForType(string $aggregateType, string $className): string
+    {
+        return $this->namespaceMap[$className] ?? $this->namespaceMap[$aggregateType] ?? Event::NAMESPACE_DEFAULT;
+    }
+
+    /**
+     * Create default repository from given class name or aggregate type
+     */
+    private function createDefaultRepository(string $aggregateType, string $className): Repository
+    {
+        if (!\class_exists($className)) {
+            throw new \InvalidArgumentException(\sprintf("Aggregate class %s does not exist for aggregate type '%s'", $className, $aggregateType));
+        }
+        if (!\is_subclass_of($className, Aggregate::class)) {
+            throw new \InvalidArgumentException(\sprintf("Aggregate class %s must extend class %s", $className, Aggregate::class));
+        }
+
+        $ret = new DefaultRepository();
+        $ret->setClassName($className);
+        $ret->setEventStore($this->eventStoreFactory->getEventStore($this->getNamespaceForType($aggregateType, $className)));
+
+        return $ret;
+    }
+
+    /**
+     * Create repository from an existing container service
+     */
+    private function createRepository(string $aggregateType, string $className): Repository
+    {
+        if ($this->container) {
+            if ($serviceId = $this->services[$className] ?? null) {
+                $ret = $this->container->get($serviceId);
+                $ret->setClassName($className);
+                $ret->setEventStore($this->eventStoreFactory->getEventStore($this->getNamespaceForType($aggregateType, $className)));
+
+                return $ret;
+            }
+            if ($serviceId = $this->services[$aggregateType] ?? null) {
+                $ret = $this->container->get($serviceId);
+                $ret->setClassName($className);
+                $ret->setEventStore($this->eventStoreFactory->getEventStore($this->getNamespaceForType($aggregateType, $className)));
+
+                return $ret;
             }
         }
-        return $services;
+
+        return $this->createDefaultRepository($aggregateType, $className);
     }
 
     /**
      * Get single repository
      */
-    public function getRepository(string $className): Repository
+    public function getRepository(string $aggregateType): Repository
     {
-        // @todo this could be optimized
-        $repositoryClassName = DefaultRepository::class;
-        if (isset($this->services[$className])) {
-            $repositoryClassName = $this->services[$className];
+        $className = $this->getClassNameForType($aggregateType);
+
+        if (isset($this->repositories[$className])) {
+            return $this->repositories[$className];
         }
 
-        return $this->repositories[$className] ?? (
-            $this->repositories[$className] = new $repositoryClassName(
-                $className,
-                $this->eventStoreFactory->getEventStore(
-                    $this->namespaceMap[$className] ?? Event::NAMESPACE_DEFAULT
-                )
-            )
-        );
+        return $this->repositories[$className] = $this->createRepository($aggregateType, $className);
     }
 }

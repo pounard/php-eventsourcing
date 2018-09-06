@@ -38,22 +38,20 @@ Wish-list, in order of preference and needs:
  * [x] add a 'type' column for aggregate identity, with no constraint at the store level,
  * [ ] test it even more,
  * [ ] implement a basic event emitter and event listener API,
- * [ ] implement a basic aggregate-based event-driven domain oriented API layer implemented
-   using generic store factory decorators,
+ * [x] implement a basic aggregate-based event-driven domain oriented API layer implemented using generic store factory decorators,
  * [ ] very large volume benchmarking,
- * [ ] configuration-based event namespace storage partionning API implemented using generic
-   store factory decorators,
+ * [ ] configuration-based event namespace storage partionning API implemented using generic store factory decorators,
  * [ ] transaction support if the other databases are using the same driver as the event store,
  * [ ] published/failed status in event table,
- * [ ] Symfony light bundle with a few dependency injection passes (also would be working for
-   Drupal 8) in order to register events and aggregates,
+ * [x] Symfony bundle with a few dependency injection passes in order to register repositories,
+ * [ ] Symfony bundle: find a way to properly register or configure event store backend,
+ * [ ] Symfony bundle: provide configuration for namespaces,
  * [ ] better configuration abilities for goat factory,
  * [ ] snapshort storage and API,
  * [ ] helpers to use it along Symfony's Messenger component,
+ * [ ] provide more event store backends,
  * [ ] Drupal 7 driver for event store,
- * [ ] Drupal 8 driver for event store,
- * [ ] Should primary key be (id, type, revision) instead of (id, revision) or should it be
-   left to the API  user to choose whatever to do with type?
+ * [ ] Drupal 8 driver for event store.
 
 # Additional arbitrary notes from concrete code
 

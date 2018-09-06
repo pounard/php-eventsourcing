@@ -17,6 +17,16 @@ use Ramsey\Uuid\UuidInterface;
 interface Repository
 {
     /**
+     * Get aggregate type
+     */
+    static public function getAggregateClassName(): string;
+
+    /**
+     * Get aggregate class name
+     */
+    static public function getAggregateType(): string;
+
+    /**
      * Create new object instance with and initialize its unique identifier.
      *
      * This method does not store the object, you must run events with its

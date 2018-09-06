@@ -1,0 +1,20 @@
+services:
+    _defaults:
+        public: false
+
+    #
+    # This is an exemple of factory, you must define your own in your primary app
+    # services.yaml file before using this bundle.
+    # @todo find a way to auto-register the factory depending on the available drivers
+    #
+    # eventsourcing.factory:
+    #     class: MakinaCorpus\EventSourcing\Goat\GoatEventStoreFactory
+    #     arguments: ['@goat.session']
+    #
+
+    MakinaCorpus\EventSourcing\EventStore\EventStoreFactory:
+        alias: eventsourcing.factory
+
+    eventsourcing.repository_factory:
+        class: MakinaCorpus\EventSourcing\Domain\RepositoryFactory
+        arguments: ['@eventsourcing.factory', [], []]
