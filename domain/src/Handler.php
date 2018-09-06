@@ -4,6 +4,9 @@ namespace MakinaCorpus\EventSourcing\Domain;
 
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
+/**
+ * @codeCoverageIgnore
+ */
 abstract class Handler implements MessageHandlerInterface
 {
     private $repositoryFactory;

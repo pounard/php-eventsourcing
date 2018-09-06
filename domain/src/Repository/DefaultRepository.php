@@ -53,6 +53,8 @@ class DefaultRepository implements Repository
 
     /**
      * Get event store
+     *
+     * @codeCoverageIgnore
      */
     final protected function getEventStore(): EventStore
     {

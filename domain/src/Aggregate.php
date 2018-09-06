@@ -25,7 +25,7 @@ abstract class Aggregate
     private static function normalizeName(string $name): string
     {
         // @todo this is ugly
-        return \implode('', \array_map('ucfirst', \preg_split('/[^a-zA-Z1-9_]+/', $name)));
+        return \implode('', \array_map('ucfirst', \preg_split('/[^a-zA-Z1-9]+/', $name)));
     }
 
     /**
