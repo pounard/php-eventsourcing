@@ -56,7 +56,6 @@ CREATE TABLE IF NOT EXISTS "$tableName" (
     "created_at" timestamp NOT NULL DEFAULT NOW(),
     "name" varchar(128) NOT NULL,
     "data" jsonb NOT NULL,
-    "is_published" boolean NOT NULL,
     PRIMARY KEY("position"),
     UNIQUE ("aggregate_id", "revision")
 );
@@ -73,7 +72,6 @@ CREATE TABLE IF NOT EXISTS $tableName (
     created_at DATETIME NOT NULL DEFAULT NOW(),
     name VARCHAR(128) NOT NULL,
     data text NOT NULL,
-    is_published INTEGER UNSIGNED NOT NULL,
     PRIMARY KEY(position),
     UNIQUE (aggregate_id, revision)
 );

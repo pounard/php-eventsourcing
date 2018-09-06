@@ -39,9 +39,7 @@ final class GoatEventStream implements \IteratorAggregate, EventStream
             $row['name'],
             // Depending upon the backend driver, JSON type might not be supported
             // (for example with MySQL) case in which we need to convert it from here.
-            $row['data'] ? (\is_string($row['data']) ? \json_decode($row['data'], true) : $row['data']) : [],
-            // Not all RDBMS natively support boolean
-            (bool)$row['is_published']
+            $row['data'] ? (\is_string($row['data']) ? \json_decode($row['data'], true) : $row['data']) : []
         );
     }
 

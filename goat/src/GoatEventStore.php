@@ -83,7 +83,6 @@ final class GoatEventStore implements EventStore
                     'created_at' => $event->createdAt(),
                     'name' => $event->getName(),
                     'data' => $data,
-                    'is_published' => $event->isPublished(),
                 ])
             ;
 

@@ -19,7 +19,6 @@ class Event
     private $aggregateType;
     private $createdAt;
     private $data;
-    private $isPublished = false;
     private $name;
     private $namespace = Event::NAMESPACE_DEFAULT;
     private $position = 0;
@@ -69,8 +68,7 @@ class Event
         $aggregateType,
         \DateTimeInterface $createdAt,
         string $name,
-        array $data,
-        bool $isPublished
+        array $data
     ): self {
 
         $ret = self::createInstanceFromName($name);
@@ -78,7 +76,6 @@ class Event
         $ret->aggregateType = $aggregateType;
         $ret->createdAt = $createdAt;
         $ret->data = $data;
-        $ret->isPublished = $isPublished;
         $ret->name = $name;
         $ret->namespace = $namespace;
         $ret->position = $position;
@@ -203,14 +200,6 @@ class Event
     final public function isStored(): bool
     {
         return $this->revision !== 0;
-    }
-
-    /**
-     * Is this event published
-     */
-    final public function isPublished(): bool
-    {
-        return $this->isPublished;
     }
 
     /**

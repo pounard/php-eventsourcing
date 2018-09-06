@@ -25,7 +25,6 @@ abstract class EventStoreTest extends TestCase
         $this->assertFalse($userEvent->isStored());
         $this->assertNotEmpty($userUuid = $userEvent->getAggregateId());
         $this->assertSame('this_is_a_type', $userEvent->getAggregateType());
-        $this->assertFalse($userEvent->isPublished());
         $this->assertEmpty($userEvent->getPosition());
         $this->assertEmpty($userEvent->getRevision());
 
@@ -34,7 +33,6 @@ abstract class EventStoreTest extends TestCase
         $this->assertGreaterThanOrEqual(1, $event->getPosition());
         $this->assertGreaterThanOrEqual(1, $event->getRevision());
         $this->assertSame($store->getNamespace(), $event->getNamespace());
-        $this->assertFalse($event->isPublished());
         $this->assertLessThan(new \DateTimeImmutable(), $event->createdAt());
         $this->assertSame('event', $event->getName());
         $this->assertTrue($userUuid->equals($event->getAggregateId()));
