@@ -28,7 +28,9 @@
     "require-dev": {
         "makinacorpus/goat": "dev-master",
         "phpunit/phpunit": "^7",
+        "symfony/config": "^3.4 || ^4",
         "symfony/dependency-injection": "^3.4 || ^4",
+        "symfony/http-kernel": "^3.4 || ^4",
         "symfony/messenger": "^4.1",
         "symfony/validator": "^3.4 || ^4",
         "symfony/yaml": "^3.4 || ^4"
@@ -41,18 +43,20 @@
     },
     "autoload": {
         "psr-4": {
+            "MakinaCorpus\\EventSourcing\\Bridge\\Goat\\": "bridge-goat/src/",
             "MakinaCorpus\\EventSourcing\\Bridge\\Symfony\\": "bridge-symfony/src/",
             "MakinaCorpus\\EventSourcing\\Domain\\": "domain/src/",
-            "MakinaCorpus\\EventSourcing\\EventStore\\": "store/src/",
-            "MakinaCorpus\\EventSourcing\\Goat\\": "goat/src/"
+            "MakinaCorpus\\EventSourcing\\EventStore\\": "event-store/src/",
+            "MakinaCorpus\\EventSourcing\\SnapshotStore\\": "snaphost-store/src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
+            "MakinaCorpus\\EventSourcing\\Bridge\\Goat\\Tests\\": "bridge-goat/tests/",
             "MakinaCorpus\\EventSourcing\\Bridge\\Symfony\\Tests\\": "bridge-symfony/tests/",
             "MakinaCorpus\\EventSourcing\\Domain\\Tests\\": "domain/tests/",
-            "MakinaCorpus\\EventSourcing\\Goat\\Tests\\": "goat/tests/",
-            "MakinaCorpus\\EventSourcing\\EventStore\\Tests\\": "store/tests/"
+            "MakinaCorpus\\EventSourcing\\EventStore\\Tests\\": "event-store/tests/",
+            "MakinaCorpus\\EventSourcing\\SnapshotStore\\Tests\\": "snaphost-store/tests/"
         }
     }
 }

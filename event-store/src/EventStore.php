@@ -9,11 +9,6 @@ use Ramsey\Uuid\UuidInterface;
 interface EventStore
 {
     /**
-     * Get namespace
-     */
-    public function getNamespace(): string;
-
-    /**
      * Store event
      */
     public function store(Event $event): Event;

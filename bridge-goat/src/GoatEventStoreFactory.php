@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MakinaCorpus\EventSourcing\Goat;
+namespace MakinaCorpus\EventSourcing\Bridge\Goat;
 
 use Goat\Runner\RunnerInterface;
 use MakinaCorpus\EventSourcing\EventStore\Event;

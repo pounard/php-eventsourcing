@@ -21,8 +21,6 @@ abstract class Aggregate
     private $revision = 0;
     private $updatedAt;
 
-
-
     /**
      * Get aggregate type, this is valid to override
      */
@@ -92,7 +90,12 @@ abstract class Aggregate
     {
         $this->play($event);
 
-        return $this->eventStore->store($event);
+        $event = $this->eventStore->store($event);
+
+        $this->revision = $event->getRevision();
+        $this->updatedAt = $event->createdAt();
+
+        return $event;
     }
 
     /**

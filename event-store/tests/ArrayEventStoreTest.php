@@ -12,7 +12,7 @@ final class ArrayEventStoreTest extends EventStoreTest
     /**
      * {@inheritdoc}
      */
-    public function getEventStore(): EventStore
+    protected function getEventStore(): EventStore
     {
         return (new ArrayEventStoreFactory())->getEventStore(\uniqid('test-'));
     }

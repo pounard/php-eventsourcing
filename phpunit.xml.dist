@@ -14,27 +14,33 @@
     </php>
 
     <testsuites>
-        <testsuite name="EventSourcing store">
-            <directory>./store/tests/</directory>
-        </testsuite>
-        <testsuite name="EventSourcing domain model">
+        <testsuite name="Domain model">
             <directory>./domain/tests/</directory>
         </testsuite>
-        <testsuite name="EventSourcing Goat integration">
-            <directory>./goat/tests/</directory>
+        <testsuite name="Event store">
+            <directory>./event-store/tests/</directory>
+        </testsuite>
+        <testsuite name="Goat bridge">
+            <directory>./bridge-goat/tests/</directory>
+        </testsuite>
+        <testsuite name="Snapshot store">
+            <directory>./snaphost-store/tests/</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory>./bridge-goat/src</directory>
+            <directory>./bridge-symfony/src</directory>
             <directory>./domain/src</directory>
-            <directory>./goat/src</directory>
-            <directory>./store/src</directory>
+            <directory>./event-store/src</directory>
+            <directory>./snaphost-store/src</directory>
             <exclude>
+                <directory>./bridge-goat/tests</directory>
+                <directory>./bridge-symfony/tests</directory>
                 <directory>./domain/tests</directory>
-                <directory>./goat/tests</directory>
-                <directory>./store/tests</directory>
-                <directory>./vendor</directory>
+                <directory>./event-store/tests</directory>
+                <directory>./snaphost-store/tests</directory>
             </exclude>
         </whitelist>
     </filter>

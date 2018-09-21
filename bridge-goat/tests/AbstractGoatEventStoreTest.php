@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace MakinaCorpus\EventSourcing\Goat\Tests;
+namespace MakinaCorpus\EventSourcing\Bridge\Goat\Tests;
 
 use Goat\Runner\RunnerInterface;
 use MakinaCorpus\EventSourcing\EventStore\EventStore;
 use MakinaCorpus\EventSourcing\EventStore\Tests\EventStoreTest;
-use MakinaCorpus\EventSourcing\Goat\GoatEventStoreFactory;
+use MakinaCorpus\EventSourcing\Bridge\Goat\GoatEventStoreFactory;
 
 abstract class AbstractGoatEventStoreTest extends EventStoreTest
 {

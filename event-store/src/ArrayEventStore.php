@@ -55,14 +55,6 @@ final class ArrayEventStore implements EventStore
     /**
      * {@inheritdoc}
      */
-    public function getNamespace(): string
-    {
-        return $this->namespace;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function store(Event $event): Event
     {
         $aggregateId = $event->getAggregateId();

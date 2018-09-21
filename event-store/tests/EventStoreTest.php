@@ -15,7 +15,7 @@ abstract class EventStoreTest extends TestCase
      * arrays, each array being an EventStore implementation. It can be
      * a generator.
      */
-    abstract public function getEventStore(): EventStore;
+    abstract protected function getEventStore(): EventStore;
 
     public function testStoreReturn()
     {
@@ -32,7 +32,6 @@ abstract class EventStoreTest extends TestCase
         $this->assertNotSame($event, $userEvent);
         $this->assertGreaterThanOrEqual(1, $event->getPosition());
         $this->assertGreaterThanOrEqual(1, $event->getRevision());
-        $this->assertSame($store->getNamespace(), $event->getNamespace());
         $this->assertLessThan(new \DateTimeImmutable(), $event->createdAt());
         $this->assertSame('event', $event->getName());
         $this->assertTrue($userUuid->equals($event->getAggregateId()));

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MakinaCorpus\EventSourcing\Goat;
+namespace MakinaCorpus\EventSourcing\Bridge\Goat;
 
 use Goat\Query\Query;
 use Goat\Runner\RunnerInterface;
@@ -31,14 +31,6 @@ final class GoatEventStore implements EventStore
         $this->namespace = $namespace;
         $this->runner = $runner;
         $this->tableName = $tableName;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getNamespace(): string
-    {
-        return $this->namespace;
     }
 
     /**
@@ -108,11 +100,7 @@ final class GoatEventStore implements EventStore
 
         } catch (\Throwable $e) {
             if ($transaction && $transaction->isStarted()) {
-                try {
-                    $transaction->rollback();
-                } catch (\Throwable $rollbackError) {
-                    // Do nothing, you are basically fucked.
-                }
+                $transaction->rollback();
             }
 
             throw $e;

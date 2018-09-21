@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace MakinaCorpus\EventSourcing\Goat\Tests;
+namespace MakinaCorpus\EventSourcing\Bridge\Goat\Tests;
 
 use Goat\Driver\Dsn;
 use Goat\Driver\ExtPgSQL\ExtPgSQLConnection;
