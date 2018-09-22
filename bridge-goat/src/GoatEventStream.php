@@ -8,31 +8,28 @@ use Goat\Runner\ResultIteratorInterface;
 use MakinaCorpus\EventSourcing\EventStore\Event;
 use MakinaCorpus\EventSourcing\EventStore\EventStream;
 use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 final class GoatEventStream implements \IteratorAggregate, EventStream
 {
-    private $namespace;
     private $result;
 
     /**
      * Default constructor
      */
-    public function __construct(ResultIteratorInterface $result, string $namespace)
+    public function __construct(ResultIteratorInterface $result)
     {
-        $this->namespace = $namespace;
         $this->result = $result;
     }
 
     /**
      * Convert goat row to event
      */
-    public static function fromRow(array $row, string $namespace): Event
+    public static function fromRow(array $row): Event
     {
         return Event::fromEventStore(
-            $namespace,
             $row['position'],
-            // @todo Goat does not natively support UUID yet
-            Uuid::fromString($row['aggregate_id']),
+            $row['aggregate_id'] instanceof UuidInterface ? $row['aggregate_id'] : Uuid::fromString((string)$row['aggregate_id']),
             $row['revision'],
             $row['aggregate_type'],
             $row['created_at'],
@@ -49,7 +46,7 @@ final class GoatEventStream implements \IteratorAggregate, EventStream
     public function getIterator()
     {
         foreach ($this->result as $row) {
-            yield self::fromRow($row, $this->namespace);
+            yield self::fromRow($row);
         }
     }
 

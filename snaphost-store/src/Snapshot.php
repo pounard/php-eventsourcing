@@ -25,10 +25,10 @@ final class Snapshot
         $aggregate
     ): self {
         $ret = new self;
+        $ret->aggregate = $aggregate;
         $ret->aggregateId = $aggregateId;
         $ret->aggregateType = $aggregateType;
         $ret->createdAt = $createdAt;
-        $ret->aggregate = $aggregate;
         $ret->revision = $revision;
         $ret->updatedAt = $updatedAt;
 

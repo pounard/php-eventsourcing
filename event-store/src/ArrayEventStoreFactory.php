@@ -23,7 +23,7 @@ final class ArrayEventStoreFactory implements EventStoreFactory
     public function getEventStore(string $namespace = Event::NAMESPACE_DEFAULT): EventStore
     {
         return $this->eventStores[$namespace] ?? (
-            $this->eventStores[$namespace] = new ArrayEventStore($namespace)
+            $this->eventStores[$namespace] = new ArrayEventStore()
         );
     }
 }

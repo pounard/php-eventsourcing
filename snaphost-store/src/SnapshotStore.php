@@ -39,4 +39,18 @@ interface SnapshotStore
      * Load aggregate snapshot
      */
     public function load(UuidInterface $id): ?Snapshot;
+
+    /**
+     * Set serializer
+     *
+     * @todo This should not be part of the public API
+     */
+    public function setSerializer(Serializer $serializer): void;
+
+    /**
+     * Get serializer
+     *
+     * @todo This should not be part of the public API
+     */
+    public function getSerializer(): Serializer;
 }

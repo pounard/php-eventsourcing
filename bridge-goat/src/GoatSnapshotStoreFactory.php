@@ -6,13 +6,13 @@ namespace MakinaCorpus\EventSourcing\Bridge\Goat;
 
 use Goat\Runner\RunnerInterface;
 use MakinaCorpus\EventSourcing\EventStore\Event;
-use MakinaCorpus\EventSourcing\EventStore\EventStore;
-use MakinaCorpus\EventSourcing\EventStore\EventStoreFactory;
+use MakinaCorpus\EventSourcing\SnapshotStore\SnapshotStore;
+use MakinaCorpus\EventSourcing\SnapshotStore\SnapshotStoreFactory;
 
 /**
  * @todo Extract table naming into a strategy object?
  */
-final class GoatEventStoreFactory implements EventStoreFactory
+final class GoatSnapshotStoreFactory implements SnapshotStoreFactory
 {
     private $eventStores = [];
     private $namespaceMap = [];
@@ -40,7 +40,7 @@ final class GoatEventStoreFactory implements EventStoreFactory
      */
     public function getTableName(string $namespace): string
     {
-        return "{$namespace}_events";
+        return "{$namespace}_snapshots";
     }
 
     /**
@@ -52,15 +52,13 @@ final class GoatEventStoreFactory implements EventStoreFactory
             // PgSQL is the only modern RDBMS actually supported.
             $this->runner->execute(<<<QUERY
 CREATE TABLE IF NOT EXISTS "$tableName" (
-    "position" bigserial NOT NULL,
     "aggregate_id" uuid NOT NULL,
     "aggregate_type" varchar(128) NOT NULL DEFAULT 'none',
     "revision" integer NOT NULL,
-    "created_at" timestamp NOT NULL DEFAULT NOW(),
-    "name" varchar(128) NOT NULL,
-    "data" jsonb NOT NULL,
-    PRIMARY KEY("position"),
-    UNIQUE ("aggregate_id", "revision")
+    "created_at" timestamp NOT NULL,
+    "updated_at" timestamp NOT NULL,
+    "data" bytea NOT NULL,
+    PRIMARY KEY("aggregate_id")
 );
 QUERY
             );
@@ -68,15 +66,13 @@ QUERY
             // MySQL and others with only basics from 20 years ago.
             $this->runner->execute(<<<QUERY
 CREATE TABLE IF NOT EXISTS $tableName (
-    position INTEGER UNSIGNED NOT NULL AUTO_INCREMENT,
     aggregate_id VARCHAR(36) NOT NULL,
-    aggregate_type VARCHAR(128) NOT NULL DEFAULT 'none',
+    aggregate_type VARCHAR(128) NOT NULL,
     revision INTEGER UNSIGNED NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT NOW(),
-    name VARCHAR(128) NOT NULL,
-    data text NOT NULL,
-    PRIMARY KEY(position),
-    UNIQUE (aggregate_id, revision)
+    created_at DATETIME NOT NULL,
+    updated_at DATETIME NOT NULL,
+    data blob NOT NULL,
+    PRIMARY KEY(aggregate_id)
 );
 QUERY
             );
@@ -86,7 +82,7 @@ QUERY
     /**
      * Create namespace
      */
-    private function createEventStore(string $namespace = Event::NAMESPACE_DEFAULT): GoatEventStore
+    private function createSnapshotStore(string $namespace = Event::NAMESPACE_DEFAULT): GoatSnapshotStore
     {
         $tableName = $this->getTableName($namespace);
 
@@ -95,16 +91,16 @@ QUERY
             $this->createTableIfNotExists($tableName);
         }
 
-        return new GoatEventStore($this->runner, $tableName);
+        return new GoatSnapshotStore($this->runner, $tableName);
     }
 
     /**
      * Get event store for given namespace
      */
-    public function getEventStore(string $namespace = Event::NAMESPACE_DEFAULT): EventStore
+    public function getSnapshotStore(string $namespace = Event::NAMESPACE_DEFAULT): SnapshotStore
     {
         return $this->eventStores[$namespace] ?? (
-            $this->eventStores[$namespace] = $this->createEventStore($namespace)
+            $this->eventStores[$namespace] = $this->createSnapshotStore($namespace)
         );
     }
 }

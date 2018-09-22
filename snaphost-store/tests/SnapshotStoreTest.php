@@ -9,6 +9,7 @@ use MakinaCorpus\EventSourcing\Domain\Tests\MockAggregateEntity;
 use MakinaCorpus\EventSourcing\EventStore\ArrayEventStoreFactory;
 use MakinaCorpus\EventSourcing\EventStore\Event;
 use MakinaCorpus\EventSourcing\EventStore\EventStore;
+use MakinaCorpus\EventSourcing\SnapshotStore\AggregateSerializer;
 use MakinaCorpus\EventSourcing\SnapshotStore\Snapshot;
 use MakinaCorpus\EventSourcing\SnapshotStore\SnapshotStore;
 use PHPUnit\Framework\TestCase;
@@ -51,7 +52,9 @@ abstract class SnapshotStoreTest extends TestCase
             $createdAt = new \DateTime(sprintf('now -%d days', \rand(50, 100)));
             $updatedAt = new \DateTime(sprintf('now -%d days', \rand(1, 49)));
 
-            yield (string)$id => Snapshot::fromArbitraryData($id, $type, rand(1, 27), $createdAt, $updatedAt, ['Random data']);
+            yield (string)$id => Snapshot::fromArbitraryData(
+                $id, $type, rand(1, 27), $createdAt, $updatedAt, ['Random data']
+            );
         }
     }
 
@@ -63,14 +66,8 @@ abstract class SnapshotStoreTest extends TestCase
         $repository->setEventStore($eventStore = $this->getEventStore());
         $repository->setClassName(MockAggregateEntity::class);
 
-        // @todo:
-        //  - create an aggregate with a store
-        //  - raise events on it
-        //  - store it
-        //  - load the aggregate and compare property per property
-        //  - raise some other events
-        //  - compare the aggregate and check it differs at least revision and update date
-        //  - BEWARE that memory store may keep references, it *MUST* be serialized or cloned
+        // @todo this should be more transparent
+        $store->setSerializer(new AggregateSerializer($eventStore, $store->getSerializer()));
 
         /** @var \MakinaCorpus\EventSourcing\Domain\Tests\MockAggregateEntity $aggregate */
         $aggregate = $repository->create();

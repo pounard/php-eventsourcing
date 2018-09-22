@@ -16,7 +16,6 @@ use Ramsey\Uuid\UuidInterface;
 
 final class GoatEventStore implements EventStore
 {
-    private $namespace = Event::NAMESPACE_DEFAULT;
     private $runner;
     private $tableName;
 
@@ -26,17 +25,14 @@ final class GoatEventStore implements EventStore
      * @codeCoverageIgnore
      *   Code coverage does not take into account data provider run methods.
      */
-    public function __construct(string $namespace, RunnerInterface $runner, string $tableName)
+    public function __construct(RunnerInterface $runner, string $tableName)
     {
-        $this->namespace = $namespace;
         $this->runner = $runner;
         $this->tableName = $tableName;
     }
 
     /**
      * {@inheritdoc}
-     *
-     * @todo Should we write a variant for RDBMS that don't support RETURNING ?
      */
     public function store(Event $event): Event
     {
@@ -93,7 +89,7 @@ final class GoatEventStore implements EventStore
                 ;
             }
 
-            $newEvent = GoatEventStream::fromRow($row, $this->namespace);
+            $newEvent = GoatEventStream::fromRow($row);
             $transaction->commit();
 
             return $newEvent;
@@ -162,7 +158,7 @@ final class GoatEventStore implements EventStore
             }
         }
 
-        return new GoatEventStream($select->execute(), $this->namespace);
+        return new GoatEventStream($select->execute());
     }
 
     /**

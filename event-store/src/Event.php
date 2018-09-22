@@ -20,7 +20,6 @@ class Event
     private $createdAt;
     private $data;
     private $name;
-    private $namespace = Event::NAMESPACE_DEFAULT;
     private $position = 0;
     private $revision = 0;
 
@@ -29,7 +28,6 @@ class Event
      */
     private static function normalizeName(string $name): string
     {
-        // @todo this is ugly
         return \implode('', \array_map('ucfirst', \preg_split('/[^a-zA-Z1-9]+/', $name)));
     }
 
@@ -86,7 +84,6 @@ class Event
      * Create from event store data
      */
     final public static function fromEventStore(
-        string $namespace,
         int $position,
         UuidInterface $aggregateId,
         int $revision,
@@ -102,7 +99,6 @@ class Event
         $ret->createdAt = $createdAt;
         $ret->data = $data;
         $ret->name = $name;
-        $ret->namespace = $namespace;
         $ret->position = $position;
         $ret->revision = $revision;
 
@@ -153,14 +149,6 @@ class Event
         $ret->name = $name;
 
         return $ret;
-    }
-
-    /**
-     * Get event namespace, should use for debugging purpose only
-     */
-    final public function getNamespace(): string
-    {
-        return $this->namespace;
     }
 
     /**

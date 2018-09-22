@@ -9,7 +9,6 @@ use Ramsey\Uuid\UuidInterface;
 
 /**
  * @todo
- *   - need serializer (for later)
  *   - need single controller, multiple route (rest api, one url per resource type)
  *   - should it need to have allowed data from here?
  *   - (need aggregate <-> string type) registry

@@ -13,16 +13,15 @@ interface Serializer
      *   Arbitrary aggregate, might be anything
      *
      * @return mixed
-     *   Can be anything, as long as the store can store it, in real life for
-     *   most implementation, this should return a string, but for more advanced
-     *   storage backend, it could be anything more revelant to the backend.
+     *   Serialized linear representation, this is not type hinted with the
+     *   string type here, else it may break with nul chars.
      */
-    public function serialize($aggregate);
+    public function serialize($aggregate): string;
 
     /**
      * Unserialize aggregate
      *
-     * @param mixed $value
+     * @param string $value
      *   The anything serialize() returned.
      *
      * @return null|mixed
@@ -30,5 +29,5 @@ interface Serializer
      *   returned, this means that the data is broken, storage backend has the
      *   responsability of invalidating the entry and return null itself.
      */
-    public function unserialize($value);
+    public function unserialize(string $value);
 }

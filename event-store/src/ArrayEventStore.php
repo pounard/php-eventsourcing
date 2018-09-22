@@ -14,21 +14,9 @@ use Ramsey\Uuid\UuidInterface;
  */
 final class ArrayEventStore implements EventStore
 {
-    private $namespace = Event::NAMESPACE_DEFAULT;
     private $serial = 1;
     private $aggregateSequence = [];
     private $events = [];
-
-    /**
-     * Default constructor
-     *
-     * @codeCoverageIgnore
-     *   Code coverage does not take into account data provider run methods.
-     */
-    public function __construct(string $namespace)
-    {
-        $this->namespace = $namespace;
-    }
 
     /**
      * Get next revision number for aggregate
@@ -70,7 +58,6 @@ final class ArrayEventStore implements EventStore
 
         // Create normalized, will all data event object
         $entry = Event::fromEventStore(
-            $this->namespace,
             $position,
             $aggregateId,
             $revision,

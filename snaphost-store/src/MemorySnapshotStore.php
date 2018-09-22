@@ -11,28 +11,31 @@ use Ramsey\Uuid\UuidInterface;
  *
  * It works as the reference implementation, as well as a memory cache ready
  * for production use.
+ *
+ * @todo
+ *   - make unserialize/serialize more performant by creating the closure
+ *     only once and,
+ *   - make a snapshot based repository, or make it within the default
+ *     implementation so that anyone implementing it will have it
+ *     (and make it optionnal using a setter),
+ *   - write redis implementation (because I love Redis),
+ *   - plug it into the symfony bridge per default, and add configuration
+ *     for it,
+ *   - make it listen to event store events, for automatic aggregate
+ *     saving, find a way, because event store does not know anything
+ *     about aggregates,
+ *   - implement the event store event dispatcher and events, and make
+ *     sure that aggregate (in domain api) based code attach aggregates
+ *     to event for this to catch and save them,
+ *   - write more tests,
+ *   - go sleep and stop listening to portal 2 ost.
  */
 final class MemorySnapshotStore implements SnapshotStore
 {
+    use SnapshotStoreTrait;
+
     private $byTypeMap = [];
     private $byIdMap = [];
-    private $serializer;
-
-    /**
-     * Set serializer
-     */
-    public function setSerializer(Serializer $serializer): void
-    {
-        $this->serializer = $serializer;
-    }
-
-    /**
-     * Get serializer
-     */
-    private function getSerializer(): Serializer
-    {
-        return $this->serializer ?? ($this->serializer = new PhpSerializer());
-    }
 
     /**
      * {@inheritdoc}

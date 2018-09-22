@@ -47,7 +47,9 @@ Wish-list, in order of preference and needs:
  * [ ] Symfony bundle: find a way to properly register or configure event store backend,
  * [ ] Symfony bundle: provide configuration for namespaces,
  * [ ] better configuration abilities for goat factory,
- * [ ] snapshort storage and API,
+ * [x] snapshort storage and API,
+ * [ ] better serializer API for snapshot storage
+ * [ ] auto serializer instanciation depending on the event store
  * [ ] helpers to use it along Symfony's Messenger component,
  * [ ] provide more event store backends,
  * [ ] Drupal 7 driver for event store,
